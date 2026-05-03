@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mercado de Propriedade Intelectual - UNIRIO</title>
+    <title>Mercado Digital de Patentes Acadêmicas</title>
     <style>
         :root {
             --primary-color: #004a8d;
@@ -19,6 +19,7 @@
             color: var(--text-dark);
         }
 
+        /* NAVBAR */
         .navbar {
             background-color: white;
             padding: 0 5%;
@@ -32,6 +33,12 @@
             height: 70px;
         }
 
+        .logo-container {
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+
         .logo-container img {
             max-height: 55px;
             width: auto;
@@ -43,11 +50,13 @@
             color: var(--primary-color);
             margin-left: 20px;
             font-weight: 600;
+            cursor: pointer;
         }
 
+        /* BUSCA */
         .search-container {
-            padding: 2.5rem 5%;
-            background: linear-gradient(rgba(0,74,141,0.85), rgba(0,74,141,0.85)), url('https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&q=80&w=1200');
+            padding: 3rem 5%;
+            background: linear-gradient(rgba(0,74,141,0.9), rgba(0,74,141,0.9)), url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=1200');
             background-size: cover;
             color: white;
             text-align: center;
@@ -55,7 +64,7 @@
 
         .search-box {
             display: flex;
-            max-width: 900px;
+            max-width: 800px;
             margin: 1.5rem auto;
             gap: 10px;
         }
@@ -63,7 +72,7 @@
         input[type="text"], select {
             padding: 12px;
             border-radius: 5px;
-            border: 1px solid #ddd;
+            border: none;
             flex-grow: 1;
         }
 
@@ -78,9 +87,10 @@
             transition: 0.3s;
         }
 
+        /* CATALOGO */
         .catalog {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 25px;
             padding: 2rem 5%;
         }
@@ -89,33 +99,40 @@
             background: white;
             border-radius: 10px;
             padding: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             border-top: 5px solid var(--primary-color);
             display: flex;
             flex-direction: column;
         }
 
-        .type-badge {
-            font-size: 0.65rem;
-            padding: 4px 10px;
-            border-radius: 20px;
+        .status-badge {
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 12px;
             text-transform: uppercase;
             font-weight: bold;
-            background: #eee;
-            margin-bottom: 12px;
-            display: inline-block;
+            align-self: flex-start;
+            margin-bottom: 10px;
+            background: #e3f9e5; 
+            color: #1f7a24;
         }
 
         .patent-card h3 { 
-            margin: 0 0 12px 0; 
+            margin: 0 0 10px 0; 
             font-size: 1rem; 
             color: var(--primary-color);
-            line-height: 1.3;
         }
-        
-        .patent-card p { font-size: 0.85rem; color: #555; margin-bottom: 15px; }
-        .patent-card .meta { font-size: 0.75rem; color: #888; margin-top: auto; border-top: 1px solid #eee; padding-top: 15px; }
 
+        .patent-card p { font-size: 0.85rem; color: #666; flex-grow: 1; margin-bottom: 15px; }
+
+        .patent-card .meta { 
+            font-size: 0.75rem; 
+            color: #888; 
+            border-top: 1px solid #eee; 
+            padding-top: 10px; 
+        }
+
+        /* CARRINHO */
         #cart-modal {
             position: fixed;
             right: -400px;
@@ -130,31 +147,40 @@
         }
 
         #cart-modal.active { right: 0; }
+
+        .cart-item {
+            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
 
     <nav class="navbar">
         <div class="logo-container">
-            <a href="#"><img src="logo.png" alt="Logo UNIRIO"></a>
+            <a href="#"><img src="logo.png" alt="Mercado Digital de Patentes Acadêmicas"></a>
         </div>
         <div class="nav-menu">
             <a href="#">Início</a>
-            <a href="#" onclick="toggleCart()">Interesses (<span id="cart-count">0</span>)</a>
-            <a href="#">Acesso Restrito</a>
+            <a onclick="toggleCart()">Carrinho (<span id="cart-count">0</span>)</a>
+            <a href="#">Login</a>
         </div>
     </nav>
 
     <header class="search-container">
-        <h1>Vitrine de Tecnologias UNIRIO</h1>
-        <p>Catálogo de Propriedade Intelectual - Portfólio 2024</p>
+        <h1>Mercado Digital de Patentes Acadêmicas</h1>
+        <p>Vitrine de Inovação e Propriedade Intelectual da UNIRIO</p>
         <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Busque por título, inventor ou palavra-chave...">
-            <select id="filterType">
-                <option value="todos">Todos os Tipos</option>
-                <option value="Patente de Invenção">Patente de Invenção</option>
-                <option value="Programa de Computador">Software</option>
-                <option value="Modelo de Utilidade">Modelo de Utilidade</option>
+            <input type="text" id="searchInput" placeholder="Busque por título ou inventores...">
+            <select id="filterArea">
+                <option value="todos">Todas as Áreas</option>
+                <option value="Saúde">Saúde</option>
+                <option value="Tecnologia">Tecnologia</option>
+                <option value="Alimentos">Alimentos</option>
             </select>
             <button onclick="filterPatents()">Pesquisar</button>
         </div>
@@ -163,58 +189,51 @@
     <main class="catalog" id="patentCatalog"></main>
 
     <aside id="cart-modal">
-        <h2>Lista de Interesse</h2>
+        <h2>Meu Carrinho</h2>
         <div id="cart-items"></div>
         <div style="margin-top: 20px;">
-            <button style="width: 100%;" onclick="startInquiry()">Manifestar Interesse</button>
+            <button style="width: 100%;" onclick="startPurchase()">Finalizar Processo</button>
             <button style="width: 100%; background: #ccc; margin-top: 10px;" onclick="toggleCart()">Fechar</button>
         </div>
     </aside>
 
     <script>
-        // Dados reais extraídos do Portfólio UNIRIO 2024
+        // Patentes extraídas do Portfólio UNIRIO 2024
         const patents = [
             { 
                 id: 1, 
-                title: "Extrato, Composição Farmacêutica e Processo de Obtenção de Substâncias Contra o Vírus HIV-1", 
-                type: "Patente de Invenção", 
-                desc: "Invenção de extrato de produtos marinhos com ação inibitória da replicação do vírus HIV-1.",
-                inventors: "Paixão, I.C.N.P; Teixeira, V.L.; et al." 
+                title: "Processo de obtenção de biomassa de fruta-pão", 
+                area: "Alimentos", 
+                inventor: "M.B.S. Feijó; I.L.G.T. Almeida",
+                desc: "Produção de biomassa verde e madura para aplicações na indústria alimentícia e farmacêutica."
             },
             { 
                 id: 2, 
-                title: "Processo de Obtenção de Biomassa de Fruta-Pão", 
-                type: "Patente de Invenção", 
-                desc: "Processo de cozimento sob pressão para obtenção de biomassa para uso nutricional e químico.",
-                inventors: "Feijó, M.B.S; Almeida, I.L.G.T." 
+                title: "Extrato contra o vírus HIV-1 a partir de produtos marinhos", 
+                area: "Saúde", 
+                inventor: "I.C.N.P. Paixão; V.L. Teixeira",
+                desc: "Composição farmacêutica com ação inibitória da replicação viral utilizando extratos naturais."
             },
             { 
                 id: 3, 
-                title: "Sistema de Produção Sonora e Método de Produção Sonora", 
-                type: "Patente de Invenção", 
-                desc: "Sistema portátil reconfigurável para auxílio da educação musical por reprodução digital.",
-                inventors: "Pimentel, M.G.; Santos, T.M.; Filippo, D.D.R." 
+                title: "Ritmáximo: Software para educação musical", 
+                area: "Tecnologia", 
+                inventor: "F.A.P. Guilhon; A.C.S. Figueiredo",
+                desc: "Programa de computador voltado para o desenvolvimento rítmico de pessoas com deficiência visual."
             },
             { 
                 id: 4, 
-                title: "Ritmáximo", 
-                type: "Programa de Computador", 
-                desc: "Software gratuito para desenvolvimento musical de pessoas com deficiência visual.",
-                inventors: "Guilhon, F.A.P; Figueiredo, A.C.S." 
+                title: "Iluminador Subcutâneo para Terapia Intravenosa", 
+                area: "Saúde", 
+                inventor: "E.C. Santana; N.M.A. Figueiredo",
+                desc: "Dispositivo para visualização da rede venosa periférica facilitando procedimentos hospitalares."
             },
             { 
                 id: 5, 
-                title: "Nursing Alert", 
-                type: "Programa de Computador", 
-                desc: "Aplicativo para acesso à beira leito de escores de alerta precoce e diagnósticos de enfermagem.",
-                inventors: "Andrade, L.S.; Silva, R.F.A." 
-            },
-            { 
-                id: 6, 
-                title: "Iluminador Subcutâneo para Terapia Intravenosa", 
-                type: "Modelo de Utilidade", 
-                desc: "Dispositivo para visualização da rede venosa e facilitação de cateterismo periférico.",
-                inventors: "Santana, E.C.; Figueiredo, N.M.A." 
+                title: "Nursing Alert: Aplicativo de auxílio ao enfermeiro", 
+                area: "Tecnologia", 
+                inventor: "L.S. Andrade; R.F.A. Silva",
+                desc: "Sistema de suporte à decisão clínica para diagnóstico e escores de alerta à beira do leito."
             }
         ];
 
@@ -223,17 +242,18 @@
         function renderPatents(data) {
             const container = document.getElementById('patentCatalog');
             container.innerHTML = '';
+            
             data.forEach(p => {
                 container.innerHTML += `
                     <div class="patent-card">
-                        <span class="type-badge">${p.type}</span>
+                        <span class="status-badge">Disponível</span>
                         <h3>${p.title}</h3>
                         <p>${p.desc}</p>
                         <div class="meta">
-                            <strong>Inventores:</strong> ${p.inventors}<br>
-                            <strong>Instituição:</strong> UNIRIO
+                            <strong>Inventores:</strong> ${p.inventor}<br>
+                            <strong>Área:</strong> ${p.area}
                         </div>
-                        <button style="margin-top:15px; width:100%" onclick="addToCart(${p.id})">Adicionar Interesse</button>
+                        <button style="margin-top:15px;" onclick="addToCart(${p.id})">Adicionar ao Carrinho</button>
                     </div>
                 `;
             });
@@ -241,18 +261,21 @@
 
         function addToCart(id) {
             const item = patents.find(p => p.id === id);
-            if (!cart.find(c => c.id === id)) {
-                cart.push(item);
-                updateCartUI();
+            if (cart.some(c => c.id === id)) {
+                alert("Este item já está no carrinho.");
+                return;
             }
+            cart.push(item);
+            updateCartUI();
         }
 
         function updateCartUI() {
             document.getElementById('cart-count').innerText = cart.length;
-            document.getElementById('cart-items').innerHTML = cart.map(i => `
-                <div style="border-bottom:1px solid #eee; padding:10px 0; font-size:0.9rem">
-                    ${i.title} 
-                    <button onclick="removeFromCart(${i.id})" style="background:none; color:red; padding:0; float:right">Remover</button>
+            const itemsContainer = document.getElementById('cart-items');
+            itemsContainer.innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <span>${item.title}</span>
+                    <button onclick="removeFromCart(${item.id})" style="background:red; padding: 2px 8px;">X</button>
                 </div>
             `).join('');
         }
@@ -266,19 +289,24 @@
             document.getElementById('cart-modal').classList.toggle('active');
         }
 
-        function filterPatents() {
-            const term = document.getElementById('searchInput').value.toLowerCase();
-            const type = document.getElementById('filterType').value;
-            const filtered = patents.filter(p => {
-                const matchesTerm = p.title.toLowerCase().includes(term) || p.inventors.toLowerCase().includes(term);
-                const matchesType = type === 'todos' || p.type === type;
-                return matchesTerm && matchesType;
-            });
-            renderPatents(filtered);
+        function startPurchase() {
+            if (cart.length === 0) return alert("Carrinho vazio!");
+            alert("Protocolo gerado! O NIT da UNIRIO entrará em contato para os próximos passos.");
+            cart = [];
+            updateCartUI();
+            toggleCart();
         }
 
-        function startInquiry() {
-            if(cart.length > 0) alert("Solicitação de informações enviada à DIT/UNIRIO!");
+        function filterPatents() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const area = document.getElementById('filterArea').value;
+            
+            const filtered = patents.filter(p => {
+                const matchesTerm = p.title.toLowerCase().includes(term) || p.inventor.toLowerCase().includes(term);
+                const matchesArea = area === 'todos' || p.area === area;
+                return matchesTerm && matchesArea;
+            });
+            renderPatents(filtered);
         }
 
         renderPatents(patents);

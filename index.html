@@ -10,6 +10,7 @@
             --secondary-color: #00a3e0;
             --bg-light: #f4f7f6;
             --text-dark: #333;
+            --success: #28a745;
         }
 
         body {
@@ -33,17 +34,7 @@
             height: 70px;
         }
 
-        .logo-container {
-            height: 100%;
-            display: flex;
-            align-items: center;
-        }
-
-        .logo-container img {
-            max-height: 55px;
-            width: auto;
-            display: block;
-        }
+        .logo-container img { max-height: 55px; width: auto; cursor: pointer; }
 
         .nav-menu a {
             text-decoration: none;
@@ -53,7 +44,38 @@
             cursor: pointer;
         }
 
-        /* BUSCA */
+        .btn-register {
+            background-color: var(--primary-color);
+            color: white !important;
+            padding: 8px 15px;
+            border-radius: 5px;
+        }
+
+        /* SEÇÕES */
+        .page-section { display: none; padding: 2rem 5%; }
+        .active-section { display: block; }
+
+        /* FORMULÁRIOS */
+        .form-container {
+            max-width: 500px;
+            margin: 2rem auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        /* VITRINE / CATALOGO */
         .search-container {
             padding: 3rem 5%;
             background: linear-gradient(rgba(0,74,141,0.9), rgba(0,74,141,0.9)), url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=1200');
@@ -62,74 +84,19 @@
             text-align: center;
         }
 
-        .search-box {
-            display: flex;
-            max-width: 800px;
-            margin: 1.5rem auto;
-            gap: 10px;
-        }
-
-        input[type="text"], select {
-            padding: 12px;
-            border-radius: 5px;
-            border: none;
-            flex-grow: 1;
-        }
-
-        button {
-            padding: 12px 25px;
-            background-color: var(--secondary-color);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-
-        /* CATALOGO */
         .catalog {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 25px;
-            padding: 2rem 5%;
+            margin-top: 20px;
         }
 
         .patent-card {
             background: white;
-            border-radius: 10px;
             padding: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-radius: 10px;
             border-top: 5px solid var(--primary-color);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .status-badge {
-            font-size: 0.7rem;
-            padding: 3px 8px;
-            border-radius: 12px;
-            text-transform: uppercase;
-            font-weight: bold;
-            align-self: flex-start;
-            margin-bottom: 10px;
-            background: #e3f9e5; 
-            color: #1f7a24;
-        }
-
-        .patent-card h3 { 
-            margin: 0 0 10px 0; 
-            font-size: 1rem; 
-            color: var(--primary-color);
-        }
-
-        .patent-card p { font-size: 0.85rem; color: #666; flex-grow: 1; margin-bottom: 15px; }
-
-        .patent-card .meta { 
-            font-size: 0.75rem; 
-            color: #888; 
-            border-top: 1px solid #eee; 
-            padding-top: 10px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
         /* CARRINHO */
@@ -145,170 +112,222 @@
             padding: 20px;
             z-index: 1001;
         }
-
         #cart-modal.active { right: 0; }
 
-        .cart-item {
-            border-bottom: 1px solid #eee;
-            padding: 10px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.9rem;
-        }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
     <nav class="navbar">
         <div class="logo-container">
-            <a href="#"><img src="logo.png" alt="Mercado Digital de Patentes Acadêmicas"></a>
+            <img src="logo.png" alt="Logo" onclick="showSection('home')">
         </div>
         <div class="nav-menu">
-            <a href="#">Início</a>
-            <a onclick="toggleCart()">Carrinho (<span id="cart-count">0</span>)</a>
-            <a href="#">Login</a>
+            <a onclick="showSection('home')">Vitrine</a>
+            <a id="nav-cart" onclick="toggleCart()">Carrinho (<span id="cart-count">0</span>)</a>
+            <a id="nav-nit" class="hidden" onclick="showSection('nit-panel')">Painel NIT</a>
+            <a id="nav-login" onclick="alert('Funcionalidade de Login em desenvolvimento')">Login</a>
+            <a id="nav-reg" class="btn-register" onclick="showSection('register-step1')">Cadastrar-se</a>
+            <a id="nav-logout" class="hidden" onclick="logout()">Sair</a>
         </div>
     </nav>
 
-    <header class="search-container">
-        <h1>Mercado Digital de Patentes Acadêmicas</h1>
-        <p>Vitrine de Inovação e Propriedade Intelectual da UNIRIO</p>
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Busque por título ou inventores...">
-            <select id="filterArea">
-                <option value="todos">Todas as Áreas</option>
-                <option value="Saúde">Saúde</option>
-                <option value="Tecnologia">Tecnologia</option>
-                <option value="Alimentos">Alimentos</option>
-            </select>
-            <button onclick="filterPatents()">Pesquisar</button>
-        </div>
-    </header>
+    <section id="home" class="page-section active-section">
+        <header class="search-container">
+            <h1>Mercado Digital de Patentes Acadêmicas</h1>
+            <p>Ativos de Propriedade Intelectual da UNIRIO</p>
+        </header>
+        <main class="catalog" id="patentCatalog"></main>
+    </section>
 
-    <main class="catalog" id="patentCatalog"></main>
+    <section id="register-step1" class="page-section">
+        <div class="form-container">
+            <h2>Criar nova conta</h2>
+            <p>Selecione seu perfil de acesso:</p>
+            <button style="width:100%; margin-bottom:10px;" onclick="showRegisterForm('Pesquisador')">Sou Pesquisador</button>
+            <button style="width:100%; margin-bottom:10px;" onclick="showRegisterForm('Organização Interessada')">Sou uma Empresa/Organização</button>
+            <button style="width:100%; background-color:#666;" onclick="showRegisterForm('NIT')">Sou Gestor do NIT</button>
+        </div>
+    </section>
+
+    <section id="register-form" class="page-section">
+        <div class="form-container">
+            <h2 id="reg-title">Cadastro</h2>
+            <form id="main-reg-form" onsubmit="handleRegistration(event)">
+                <div class="form-group">
+                    <label>Nome Completo / Razão Social</label>
+                    <input type="text" required id="reg-name">
+                </div>
+                <div class="form-group">
+                    <label id="label-doc">CPF/CNPJ</label>
+                    <input type="text" required id="reg-doc">
+                </div>
+                <div class="form-group">
+                    <label>E-mail</label>
+                    <input type="email" required id="reg-email">
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" required>
+                </div>
+                <button type="submit" style="width: 100%; background-color: var(--success);">Finalizar Cadastro</button>
+                <button type="button" style="width: 100%; background:none; color:#666; margin-top:10px;" onclick="showSection('register-step1')">Voltar</button>
+            </form>
+        </div>
+    </section>
+
+    <section id="nit-panel" class="page-section">
+        <div class="form-container" style="max-width: 800px;">
+            <h2>Painel de Gestão NIT - UNIRIO</h2>
+            <hr>
+            <h3>Cadastrar Novo Ativo (Patente/Software)</h3>
+            <form onsubmit="handlePatentSubmit(event)">
+                <div class="form-group">
+                    <label>Título da Patente</label>
+                    <input type="text" id="p-title" placeholder="Ex: Processo de obtenção de..." required>
+                </div>
+                <div class="form-group">
+                    <label>Área Tecnológica</label>
+                    <select id="p-area">
+                        <option>Saúde</option>
+                        <option>Alimentos</option>
+                        <option>Tecnologia</option>
+                        <option>Engenharia</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Inventores (separados por ponto e vírgula)</label>
+                    <input type="text" id="p-inv" placeholder="Nome Sobrenome; Nome Sobrenome" required>
+                </div>
+                <div class="form-group">
+                    <label>Resumo Técnico</label>
+                    <textarea id="p-desc" rows="4" required></textarea>
+                </div>
+                <button type="submit">Publicar na Vitrine</button>
+            </form>
+        </div>
+    </section>
 
     <aside id="cart-modal">
         <h2>Meu Carrinho</h2>
         <div id="cart-items"></div>
         <div style="margin-top: 20px;">
-            <button style="width: 100%;" onclick="startPurchase()">Finalizar Processo</button>
+            <button style="width: 100%;" onclick="alert('Processo iniciado!')">Finalizar Processo</button>
             <button style="width: 100%; background: #ccc; margin-top: 10px;" onclick="toggleCart()">Fechar</button>
         </div>
     </aside>
 
     <script>
-        // Patentes extraídas do Portfólio UNIRIO 2024
-        const patents = [
-            { 
-                id: 1, 
-                title: "Processo de obtenção de biomassa de fruta-pão", 
-                area: "Alimentos", 
-                inventor: "M.B.S. Feijó; I.L.G.T. Almeida",
-                desc: "Produção de biomassa verde e madura para aplicações na indústria alimentícia e farmacêutica."
-            },
-            { 
-                id: 2, 
-                title: "Extrato contra o vírus HIV-1 a partir de produtos marinhos", 
-                area: "Saúde", 
-                inventor: "I.C.N.P. Paixão; V.L. Teixeira",
-                desc: "Composição farmacêutica com ação inibitória da replicação viral utilizando extratos naturais."
-            },
-            { 
-                id: 3, 
-                title: "Ritmáximo: Software para educação musical", 
-                area: "Tecnologia", 
-                inventor: "F.A.P. Guilhon; A.C.S. Figueiredo",
-                desc: "Programa de computador voltado para o desenvolvimento rítmico de pessoas com deficiência visual."
-            },
-            { 
-                id: 4, 
-                title: "Iluminador Subcutâneo para Terapia Intravenosa", 
-                area: "Saúde", 
-                inventor: "E.C. Santana; N.M.A. Figueiredo",
-                desc: "Dispositivo para visualização da rede venosa periférica facilitando procedimentos hospitalares."
-            },
-            { 
-                id: 5, 
-                title: "Nursing Alert: Aplicativo de auxílio ao enfermeiro", 
-                area: "Tecnologia", 
-                inventor: "L.S. Andrade; R.F.A. Silva",
-                desc: "Sistema de suporte à decisão clínica para diagnóstico e escores de alerta à beira do leito."
-            }
+        // BANCO DE DADOS TEMPORÁRIO
+        let patents = [
+            { id: 1, title: "Processo de obtenção de biomassa de fruta-pão", area: "Alimentos", inventor: "M.B.S. Feijó; I.L.G.T. Almeida", desc: "Produção de biomassa verde e madura para aplicações na indústria." },
+            { id: 2, title: "Extrato contra o vírus HIV-1 a partir de produtos marinhos", area: "Saúde", inventor: "I.C.N.P. Paixão; V.L. Teixeira", desc: "Composição farmacêutica com ação inibitória da replicação viral." }
         ];
-
+        
         let cart = [];
+        let userProfile = null;
 
+        // NAVEGAÇÃO SPA
+        function showSection(id) {
+            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active-section'));
+            document.getElementById(id).classList.add('active-section');
+            window.scrollTo(0,0);
+        }
+
+        // FLUXO DE CADASTRO (UC01)
+        let selectedRole = "";
+        function showRegisterForm(role) {
+            selectedRole = role;
+            document.getElementById('reg-title').innerText = "Cadastro de " + role;
+            document.getElementById('label-doc').innerText = role === 'Organização Interessada' ? 'CNPJ' : 'CPF';
+            showSection('register-form');
+        }
+
+        function handleRegistration(event) {
+            event.preventDefault();
+            // Simulação de Validação [5a] e [5b] do documento
+            const email = document.getElementById('reg-email').value;
+            if(email === "teste@unirio.br") {
+                alert("Erro: Usuário já existente com este e-mail! (Fluxo 5b)");
+                return;
+            }
+
+            alert("Cadastro realizado com sucesso! Um e-mail de confirmação foi enviado.");
+            
+            // Se for NIT, vamos logar automaticamente para mostrar a aba
+            if(selectedRole === 'NIT') {
+                loginAsNIT();
+            } else {
+                showSection('home');
+            }
+        }
+
+        // MODO NIT
+        function loginAsNIT() {
+            userProfile = 'NIT';
+            document.getElementById('nav-reg').classList.add('hidden');
+            document.getElementById('nav-login').classList.add('hidden');
+            document.getElementById('nav-cart').classList.add('hidden');
+            document.getElementById('nav-nit').classList.remove('hidden');
+            document.getElementById('nav-logout').classList.remove('hidden');
+            showSection('nit-panel');
+        }
+
+        function logout() {
+            location.reload(); // Reseta o estado para exemplo
+        }
+
+        // CADASTRO DE PATENTE PELO NIT
+        function handlePatentSubmit(event) {
+            event.preventDefault();
+            const newPatent = {
+                id: patents.length + 1,
+                title: document.getElementById('p-title').value,
+                area: document.getElementById('p-area').value,
+                inventor: document.getElementById('p-inv').value,
+                desc: document.getElementById('p-desc').value
+            };
+            patents.push(newPatent);
+            renderPatents(patents);
+            alert("Patente publicada com sucesso na vitrine!");
+            showSection('home');
+        }
+
+        // LOGICA DA VITRINE E CARRINHO
         function renderPatents(data) {
             const container = document.getElementById('patentCatalog');
             container.innerHTML = '';
-            
             data.forEach(p => {
                 container.innerHTML += `
                     <div class="patent-card">
-                        <span class="status-badge">Disponível</span>
                         <h3>${p.title}</h3>
                         <p>${p.desc}</p>
-                        <div class="meta">
-                            <strong>Inventores:</strong> ${p.inventor}<br>
-                            <strong>Área:</strong> ${p.area}
-                        </div>
-                        <button style="margin-top:15px;" onclick="addToCart(${p.id})">Adicionar ao Carrinho</button>
-                    </div>
-                `;
+                        <small><strong>Inventores:</strong> ${p.inventor}</small><br>
+                        <button style="margin-top:10px; width:100%" onclick="addToCart(${p.id})">Adicionar ao Carrinho</button>
+                    </div>`;
             });
         }
 
         function addToCart(id) {
             const item = patents.find(p => p.id === id);
-            if (cart.some(c => c.id === id)) {
-                alert("Este item já está no carrinho.");
-                return;
+            if (!cart.some(c => c.id === id)) {
+                cart.push(item);
+                updateCartUI();
+                alert("Adicionado!");
             }
-            cart.push(item);
-            updateCartUI();
         }
 
         function updateCartUI() {
             document.getElementById('cart-count').innerText = cart.length;
-            const itemsContainer = document.getElementById('cart-items');
-            itemsContainer.innerHTML = cart.map(item => `
-                <div class="cart-item">
-                    <span>${item.title}</span>
-                    <button onclick="removeFromCart(${item.id})" style="background:red; padding: 2px 8px;">X</button>
-                </div>
+            document.getElementById('cart-items').innerHTML = cart.map(i => `
+                <div style="border-bottom:1px solid #eee; padding:5px 0;">${i.title}</div>
             `).join('');
         }
 
-        function removeFromCart(id) {
-            cart = cart.filter(c => c.id !== id);
-            updateCartUI();
-        }
+        function toggleCart() { document.getElementById('cart-modal').classList.toggle('active'); }
 
-        function toggleCart() {
-            document.getElementById('cart-modal').classList.toggle('active');
-        }
-
-        function startPurchase() {
-            if (cart.length === 0) return alert("Carrinho vazio!");
-            alert("Protocolo gerado! O NIT da UNIRIO entrará em contato para os próximos passos.");
-            cart = [];
-            updateCartUI();
-            toggleCart();
-        }
-
-        function filterPatents() {
-            const term = document.getElementById('searchInput').value.toLowerCase();
-            const area = document.getElementById('filterArea').value;
-            
-            const filtered = patents.filter(p => {
-                const matchesTerm = p.title.toLowerCase().includes(term) || p.inventor.toLowerCase().includes(term);
-                const matchesArea = area === 'todos' || p.area === area;
-                return matchesTerm && matchesArea;
-            });
-            renderPatents(filtered);
-        }
-
+        // Inicialização
         renderPatents(patents);
     </script>
 </body>

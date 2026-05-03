@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mercado de Propriedade Intelectual Acadêmica</title>
+    <style>
+        :root {
+            --primary-color: #004a8d;
+            --secondary-color: #00a3e0;
+            --bg-light: #f4f7f6;
+            --text-dark: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+        }
+
+        /* NAVBAR - ESPAÇO PARA LOGO [RN Requisito do Usuário] */
+        .navbar {
+            background-color: white;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo-placeholder {
+            width: 180px;
+            height: 50px;
+            border: 2px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: #999;
+            font-weight: bold;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--primary-color);
+            margin-left: 20px;
+            font-weight: 600;
+        }
+
+        /* BUSCA E FILTROS [UC03] */
+        .search-container {
+            padding: 2rem 5%;
+            background: linear-gradient(rgba(0,74,141,0.9), rgba(0,74,141,0.9)), url('https://via.placeholder.com/1200x300');
+            background-size: cover;
+            color: white;
+            text-align: center;
+        }
+
+        .search-box {
+            display: flex;
+            max-width: 800px;
+            margin: 1.5rem auto;
+            gap: 10px;
+        }
+
+        input[type="text"], select {
+            padding: 12px;
+            border-radius: 5px;
+            border: none;
+            flex-grow: 1;
+        }
+
+        button {
+            padding: 12px 25px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        button:hover { background-color: #0081b3; }
+
+        /* GRID DE PATENTES */
+        .catalog {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            padding: 2rem 5%;
+        }
+
+        .patent-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-top: 5px solid var(--primary-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .status-badge {
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            font-weight: bold;
+            align-self: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .status-disponivel { background: #e3f9e5; color: #1f7a24; }
+        .status-reserva { background: #fff4e5; color: #b7791f; }
+
+        .patent-card h3 { margin: 0 0 10px 0; font-size: 1.1rem; }
+        .patent-card p { font-size: 0.9rem; color: #666; flex-grow: 1; }
+        .patent-card .meta { font-size: 0.8rem; color: #888; margin-bottom: 15px; }
+
+        /* CARRINHO [UC07] */
+        #cart-modal {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 350px;
+            height: 100%;
+            background: white;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            transition: 0.4s;
+            padding: 20px;
+            z-index: 1001;
+        }
+
+        #cart-modal.active { right: 0; }
+
+        .cart-item {
+            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo-placeholder">
+          <img src="logo.jpg" alt="Logomarca do Mercado Digital de Patentes Acadêmicas">
+        </div>
+        <div class="nav-menu">
+            <a href="#">Início</a>
+            <a href="#" onclick="toggleCart()">Carrinho (<span id="cart-count">0</span>)</a>
+            <a href="#">Login</a>
+        </div>
+    </nav>
+
+    <header class="search-container">
+        <h1>Vitrine de Patentes Acadêmicas</h1>
+        <p>Conectando pesquisadores e indústrias para inovação nacional [cite: 344]</p>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Busque por área, instituição ou palavras-chave...">
+            <select id="filterArea">
+                <option value="todos">Todas as Áreas</option>
+                <option value="Biotecnologia">Biotecnologia</option>
+                <option value="TI">Tecnologia da Informação</option>
+                <option value="Materiais">Ciência dos Materiais</option>
+            </select>
+            <button onclick="filterPatents()">Pesquisar [UC03]</button>
+        </div>
+    </header>
+
+    <main class="catalog" id="patentCatalog">
+        </main>
+
+    <aside id="cart-modal">
+        <h2>Seu Carrinho [UC07]</h2>
+        <div id="cart-items"></div>
+        <div style="margin-top: 20px;">
+            <button style="width: 100%;" onclick="startPurchase()">Finalizar Reserva (3 dias) [UC04]</button>
+            <button style="width: 100%; background: #ccc; margin-top: 10px;" onclick="toggleCart()">Fechar</button>
+        </div>
+    </aside>
+
+    <script>
+        // Dados simulados baseados no minimundo [cite: 353, 364]
+        const patents = [
+            { id: 1, title: "Biossensor de Nanofios", area: "Biotecnologia", inst: "UNIRIO", status: "disponivel", inventor: "Dr. Oliveira" },
+            { id: 2, title: "Algoritmo de IA Preditiva", area: "TI", inst: "USP", status: "disponivel", inventor: "Profa. Santos" },
+            { id: 3, title: "Polímero Sustentável", area: "Materiais", inst: "UFRJ", status: "em processo de compra", inventor: "Dr. Alves" }
+        ];
+
+        let cart = [];
+
+        // Renderizar Catálogo [UC03]
+        function renderPatents(data) {
+            const container = document.getElementById('patentCatalog');
+            container.innerHTML = '';
+            
+            data.forEach(p => {
+                const card = `
+                    <div class="patent-card">
+                        <span class="status-badge ${p.status === 'disponivel' ? 'status-disponivel' : 'status-reserva'}">
+                            ${p.status === 'disponivel' ? 'Disponível' : 'Em Negociação [RN13]'}
+                        </span>
+                        <h3>${p.title}</h3>
+                        <div class="meta">📍 ${p.inst} | 👤 ${p.inventor}</div>
+                        <p>Área: ${p.area}</p>
+                        ${p.status === 'disponivel' 
+                            ? `<button onclick="addToCart(${p.id})">Adicionar ao Carrinho [UC07]</button>` 
+                            : `<button disabled style="background:#ccc">Indisponível</button>`}
+                    </div>
+                `;
+                container.innerHTML += card;
+            });
+        }
+
+        // Funções de Carrinho [UC07 / UC08 / RN13]
+        function addToCart(id) {
+            const item = patents.find(p => p.id === id);
+            if (cart.some(c => c.id === id)) {
+                alert("Esta patente já está no carrinho! [cite: 185]");
+                return;
+            }
+            cart.push(item);
+            updateCartUI();
+            alert("Patente adicionada ao carrinho!");
+        }
+
+        function updateCartUI() {
+            document.getElementById('cart-count').innerText = cart.length;
+            const itemsContainer = document.getElementById('cart-items');
+            itemsContainer.innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <span>${item.title}</span>
+                    <button onclick="removeFromCart(${item.id})" style="background:red; padding: 5px 10px;">X</button>
+                </div>
+            `).join('');
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(c => c.id !== id);
+            updateCartUI();
+        }
+
+        function toggleCart() {
+            document.getElementById('cart-modal').classList.toggle('active');
+        }
+
+        // Simulação de Início de Compra [UC04 / RN13]
+        function startPurchase() {
+            if (cart.length === 0) return alert("Carrinho vazio!");
+            
+            if (confirm("Ao iniciar, estas patentes ficarão reservadas por 3 dias úteis para você. Deseja prosseguir? ")) {
+                alert("Protocolo gerado! O NIT da instituição foi notificado. Anexe o comprovante TED em até 72h. [cite: 149, 160]");
+                cart = [];
+                updateCartUI();
+                toggleCart();
+            }
+        }
+
+        function filterPatents() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const area = document.getElementById('filterArea').value;
+            
+            const filtered = patents.filter(p => {
+                const matchesTerm = p.title.toLowerCase().includes(term) || p.inst.toLowerCase().includes(term);
+                const matchesArea = area === 'todos' || p.area === area;
+                return matchesTerm && matchesArea;
+            });
+            renderPatents(filtered);
+        }
+
+        // Inicialização
+        renderPatents(patents);
+    </script>
+</body>
+</html>

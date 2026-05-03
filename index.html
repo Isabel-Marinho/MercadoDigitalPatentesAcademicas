@@ -19,10 +19,10 @@
             color: var(--text-dark);
         }
 
-        /* NAVBAR - ESPAÇO PARA LOGO [RN Requisito do Usuário] */
+        /* NAVBAR AJUSTADA */
         .navbar {
             background-color: white;
-            padding: 1rem 5%;
+            padding: 0 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -30,18 +30,31 @@
             position: sticky;
             top: 0;
             z-index: 1000;
+            height: 70px; /* Altura fixa para alinhamento vertical */
         }
 
-        .logo-placeholder {
-            width: 180px;
-            height: 50px;
-            border: 2px dashed #ccc;
+        .logo-container {
+            height: 100%;
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            color: #999;
-            font-weight: bold;
+        }
+
+        .logo-container a {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            text-decoration: none;
+        }
+
+        .logo-container img {
+            max-height: 55px; /* Altura máxima da logo */
+            width: auto;      /* Mantém a proporção da imagem */
+            display: block;
+            transition: transform 0.2s ease;
+        }
+
+        .logo-container img:hover {
+            transform: scale(1.02);
         }
 
         .nav-menu a {
@@ -49,12 +62,17 @@
             color: var(--primary-color);
             margin-left: 20px;
             font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .nav-menu a:hover {
+            color: var(--secondary-color);
         }
 
         /* BUSCA E FILTROS [UC03] */
         .search-container {
             padding: 2rem 5%;
-            background: linear-gradient(rgba(0,74,141,0.9), rgba(0,74,141,0.9)), url('https://via.placeholder.com/1200x300');
+            background: linear-gradient(rgba(0,74,141,0.9), rgba(0,74,141,0.9)), url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=1200');
             background-size: cover;
             color: white;
             text-align: center;
@@ -150,8 +168,10 @@
 <body>
 
     <nav class="navbar">
-        <div class="logo-placeholder">
-          <img src="logo.png" alt="Logomarca do Mercado Digital de Patentes Acadêmicas">
+        <div class="logo-container">
+            <a href="#">
+                <img src="logo.png" alt="Mercado Digital de Patentes Acadêmicas">
+            </a>
         </div>
         <div class="nav-menu">
             <a href="#">Início</a>
@@ -162,7 +182,7 @@
 
     <header class="search-container">
         <h1>Vitrine de Patentes Acadêmicas</h1>
-        <p>Conectando pesquisadores e indústrias para inovação nacional [cite: 344]</p>
+        <p>Conectando pesquisadores e indústrias para inovação nacional</p>
         <div class="search-box">
             <input type="text" id="searchInput" placeholder="Busque por área, instituição ou palavras-chave...">
             <select id="filterArea">
@@ -175,8 +195,7 @@
         </div>
     </header>
 
-    <main class="catalog" id="patentCatalog">
-        </main>
+    <main class="catalog" id="patentCatalog"></main>
 
     <aside id="cart-modal">
         <h2>Seu Carrinho [UC07]</h2>
@@ -188,7 +207,7 @@
     </aside>
 
     <script>
-        // Dados simulados baseados no minimundo [cite: 353, 364]
+        // Dados simulados baseados no minimundo da documentação
         const patents = [
             { id: 1, title: "Biossensor de Nanofios", area: "Biotecnologia", inst: "UNIRIO", status: "disponivel", inventor: "Dr. Oliveira" },
             { id: 2, title: "Algoritmo de IA Preditiva", area: "TI", inst: "USP", status: "disponivel", inventor: "Profa. Santos" },
@@ -197,7 +216,6 @@
 
         let cart = [];
 
-        // Renderizar Catálogo [UC03]
         function renderPatents(data) {
             const container = document.getElementById('patentCatalog');
             container.innerHTML = '';
@@ -220,16 +238,15 @@
             });
         }
 
-        // Funções de Carrinho [UC07 / UC08 / RN13]
         function addToCart(id) {
             const item = patents.find(p => p.id === id);
             if (cart.some(c => c.id === id)) {
-                alert("Esta patente já está no carrinho! [cite: 185]");
+                alert("Esta patente já está no seu carrinho!");
                 return;
             }
             cart.push(item);
             updateCartUI();
-            alert("Patente adicionada ao carrinho!");
+            alert("Patente adicionada com sucesso!");
         }
 
         function updateCartUI() {
@@ -238,7 +255,7 @@
             itemsContainer.innerHTML = cart.map(item => `
                 <div class="cart-item">
                     <span>${item.title}</span>
-                    <button onclick="removeFromCart(${item.id})" style="background:red; padding: 5px 10px;">X</button>
+                    <button onclick="removeFromCart(${item.id})" style="background:red; padding: 5px 10px; font-size:12px;">X</button>
                 </div>
             `).join('');
         }
@@ -252,12 +269,11 @@
             document.getElementById('cart-modal').classList.toggle('active');
         }
 
-        // Simulação de Início de Compra [UC04 / RN13]
         function startPurchase() {
-            if (cart.length === 0) return alert("Carrinho vazio!");
+            if (cart.length === 0) return alert("O carrinho está vazio!");
             
-            if (confirm("Ao iniciar, estas patentes ficarão reservadas por 3 dias úteis para você. Deseja prosseguir? ")) {
-                alert("Protocolo gerado! O NIT da instituição foi notificado. Anexe o comprovante TED em até 72h. [cite: 149, 160]");
+            if (confirm("Deseja iniciar o processo de compra? As patentes ficarão reservadas por 3 dias úteis [RN13].")) {
+                alert("Protocolo de intenção gerado! O NIT foi notificado. Verifique seu e-mail para instruções de pagamento.");
                 cart = [];
                 updateCartUI();
                 toggleCart();
@@ -276,7 +292,7 @@
             renderPatents(filtered);
         }
 
-        // Inicialização
+        // Inicializar vitrine
         renderPatents(patents);
     </script>
 </body>

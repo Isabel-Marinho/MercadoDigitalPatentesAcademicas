@@ -11,6 +11,7 @@
             --bg-light: #f4f7f6;
             --text-dark: #333;
             --success: #28a745;
+            --danger: #dc3545;
         }
 
         body {
@@ -139,6 +140,22 @@
         }
         #cart-modal.active { right: 0; }
 
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9rem;
+        }
+
+        .btn-remove {
+            background-color: var(--danger);
+            width: auto;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+
         .hidden { display: none !important; }
     </style>
 </head>
@@ -180,22 +197,10 @@
         <div class="form-container">
             <h2 id="reg-title">Cadastro</h2>
             <form onsubmit="handleRegistration(event)">
-                <div class="form-group">
-                    <label>Nome Completo / Razão Social</label>
-                    <input type="text" required>
-                </div>
-                <div class="form-group">
-                    <label id="label-doc">CPF/CNPJ</label>
-                    <input type="text" required>
-                </div>
-                <div class="form-group">
-                    <label>E-mail</label>
-                    <input type="email" id="reg-email" required>
-                </div>
-                <div class="form-group">
-                    <label>Senha</label>
-                    <input type="password" required>
-                </div>
+                <div class="form-group"><label>Nome Completo</label><input type="text" required></div>
+                <div class="form-group"><label id="label-doc">CPF/CNPJ</label><input type="text" required></div>
+                <div class="form-group"><label>E-mail</label><input type="email" id="reg-email" required></div>
+                <div class="form-group"><label>Senha</label><input type="password" required></div>
                 <button type="submit" style="background-color: var(--success);">Finalizar Cadastro</button>
                 <button type="button" style="background:none; color:#666; margin-top:10px;" onclick="showSection('register-step1')">Voltar</button>
             </form>
@@ -204,40 +209,28 @@
 
     <section id="nit-panel" class="page-section">
         <div class="form-container" style="max-width: 800px;">
-            <h2>Painel de Gestão NIT - UNIRIO</h2>
-            <hr>
-            <h3>Cadastrar Novo Ativo na Vitrine</h3>
+            <h2>Painel NIT - Cadastro de Ativos</h2>
             <form onsubmit="handlePatentSubmit(event)">
+                <div class="form-group"><label>Título</label><input type="text" id="p-title" required></div>
                 <div class="form-group">
-                    <label>Título da Patente</label>
-                    <input type="text" id="p-title" required>
+                    <label>Área</label>
+                    <select id="p-area"><option>Saúde</option><option>Alimentos</option><option>Tecnologia</option></select>
                 </div>
-                <div class="form-group">
-                    <label>Área Tecnológica</label>
-                    <select id="p-area">
-                        <option>Saúde</option>
-                        <option>Alimentos</option>
-                        <option>Tecnologia</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Inventores</label>
-                    <input type="text" id="p-inv" required>
-                </div>
-                <div class="form-group">
-                    <label>Resumo Técnico</label>
-                    <textarea id="p-desc" rows="4" required></textarea>
-                </div>
-                <button type="submit">Publicar Ativo</button>
+                <div class="form-group"><label>Inventores</label><input type="text" id="p-inv" required></div>
+                <div class="form-group"><label>Resumo</label><textarea id="p-desc" rows="3" required></textarea></div>
+                <button type="submit">Publicar</button>
             </form>
         </div>
     </section>
 
     <aside id="cart-modal">
         <h2>Meu Carrinho</h2>
-        <div id="cart-items"></div>
-        <button style="margin-top:20px" onclick="alert('Iniciado!')">Finalizar</button>
-        <button style="background:#ccc; margin-top:10px;" onclick="toggleCart()">Fechar</button>
+        <div id="cart-items">
+            </div>
+        <div style="margin-top: 20px;">
+            <button onclick="alert('Processo iniciado!')">Finalizar Interesse</button>
+            <button style="background: #ccc; margin-top: 10px;" onclick="toggleCart()">Fechar</button>
+        </div>
     </aside>
 
     <script>
@@ -266,10 +259,6 @@
 
         function handleRegistration(event) {
             event.preventDefault();
-            if(document.getElementById('reg-email').value === "teste@unirio.br") {
-                alert("Usuário já existe!");
-                return;
-            }
             alert("Cadastro realizado!");
             if(selectedRole === 'NIT') loginAsNIT(); else showSection('home');
         }
@@ -283,18 +272,13 @@
             showSection('nit-panel');
         }
 
-        // FUNÇÃO SAIR CORRIGIDA
         function logout() {
-            // Reset de visibilidade da Navbar
             document.getElementById('nav-reg').classList.remove('hidden');
             document.getElementById('nav-login').classList.remove('hidden');
             document.getElementById('nav-cart').classList.remove('hidden');
             document.getElementById('nav-nit').classList.add('hidden');
             document.getElementById('nav-logout').classList.add('hidden');
-            
-            selectedRole = "";
             showSection('home');
-            alert("Sessão encerrada.");
         }
 
         function handlePatentSubmit(event) {
@@ -308,7 +292,6 @@
             };
             patents.push(newP);
             renderPatents(patents);
-            alert("Publicado com sucesso!");
             showSection('home');
         }
 
@@ -335,9 +318,27 @@
             }
         }
 
+        // FUNÇÃO PARA REMOVER DO CARRINHO
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
+            updateCartUI();
+        }
+
         function updateCartUI() {
             document.getElementById('cart-count').innerText = cart.length;
-            document.getElementById('cart-items').innerHTML = cart.map(i => `<div style="padding:5px 0; border-bottom:1px solid #eee;">${i.title}</div>`).join('');
+            const itemsContainer = document.getElementById('cart-items');
+            
+            if (cart.length === 0) {
+                itemsContainer.innerHTML = "<p style='color:#888'>Seu carrinho está vazio.</p>";
+                return;
+            }
+
+            itemsContainer.innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <span>${item.title}</span>
+                    <button class="btn-remove" onclick="removeFromCart(${item.id})">Remover</button>
+                </div>
+            `).join('');
         }
 
         function toggleCart() { document.getElementById('cart-modal').classList.toggle('active'); }
